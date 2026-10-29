@@ -1,0 +1,8 @@
+.env
+.venv/
+__pycache__/
+.DS_Store
+my_pytorch_pr_model/
+pr_test_split.csv
+pr_master_dataset.csv
+financial.csv

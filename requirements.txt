@@ -1,0 +1,9 @@
+torch
+transformers
+datasets
+pandas
+scikit-learn
+flask
+gradio
+google-genai
+python-dotenv

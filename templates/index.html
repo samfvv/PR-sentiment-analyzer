@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PR Sentiment Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1e293b;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 600px;
+        }
+        h1 { margin-top: 0; color: #38bdf8; font-size: 1.8rem; }
+        textarea {
+            width: 100%;
+            height: 120px;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #f8fafc;
+            padding: 10px;
+            box-sizing: border-box;
+            resize: none;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #0284c7;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 1rem;
+            width: 100%;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #0369a1; }
+        .results { margin-top: 2rem; display: none; }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 300px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📊 AI PR Sentiment Simulator</h1>
+    <p style="color: #94a3b8; font-size: 0.9rem;">Enter your draft to test corporate risk metrics and slang in real-time.</p>
+    
+    <textarea id="draftInput" placeholder="Type your PR draft or social media post here..."></textarea>
+    <button onclick="analyzeDraft()">Analyze Sentiment</button>
+
+    <div class="results" id="resultsBox">
+        <h3 style="text-align: center; color: #94a3b8;">Risk Analysis Breakdown</h3>
+        
+        <div id="percentageLabels" style="display: flex; justify-content: space-around; margin-bottom: 1.5rem; font-weight: bold; font-size: 1.1rem;">
+            <span style="color: #ef4444;">🚨 Risk: <span id="negPercent">0%</span></span>
+            <span style="color: #94a3b8;">😐 Neutral: <span id="neuPercent">0%</span></span>
+            <span style="color: #22c55e;">✅ Growth: <span id="posPercent">0%</span></span>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="sentimentChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    let myChart = null; // Variable to hold our chart instance
+
+    async function analyzeDraft() {
+        const text = document.getElementById('draftInput').value;
+        if(!text) return alert("Please enter some text first!");
+
+        // Send text to Flask server
+        const response = await fetch('/predict', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ text: text })
+        });
+        
+        const data = await response.json();
+    
+        document.getElementById('negPercent').innerText = data.negative.toFixed(1) + '%';
+        document.getElementById('neuPercent').innerText = data.neutral.toFixed(1) + '%';
+        document.getElementById('posPercent').innerText = data.positive.toFixed(1) + '%';
+        
+        // Show the results section
+        document.getElementById('resultsBox').style.display = 'block';
+        
+        // Render or Update the Chart.js visualization
+        const ctx = document.getElementById('sentimentChart').getContext('2d');
+
+        // If chart already exists, destroy it first to allow clean re-animation
+        if (myChart) {
+            myChart.destroy();
+        }
+
+        myChart = new Chart(ctx, {
+            type: 'doughnut', // Renders a sleek donut-hole pie chart
+            data: {
+                labels: ['🚨 Negative (Risk)', '😐 Neutral', '✅ Positive (Growth)'],
+                datasets: [{
+                    data: [data.negative, data.neutral, data.positive],
+                    backgroundColor: ['#ef4444', '#94a3b8', '#22c55e'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#f8fafc', padding: 20 }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
