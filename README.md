@@ -1,8 +1,7 @@
 # PR Risk Sentiment Analyzer
 
-A three-class text classifier that scores PR drafts and social posts as **negative (risk)**, **neutral**, or **positive (growth)**. I fine-tuned DistilBERT in a custom PyTorch training loop, evaluated it on a held-out test set against a majority-class baseline, and built two interfaces around it: a Flask web app and a Gradio chat copilot that uses the Gemini API to explain the scores and suggest safer rewrites.
+A three-class text classifier that scores PR drafts and social posts as **negative (risk)**, **neutral**, or **positive (growth)**. I fine-tuned DistilBERT in a custom PyTorch training loop, evaluated it on a held-out test set against a majority-class baseline, and built two interfaces around it: a Flask web app and a Gradio chat copilot that uses the Gemini API to explain the scores and suggest safer rewrites. This project was designed to learn the systematics of training a LLM model while incorporating an interface that users can converse with to see training results.
 
-<!-- Add a screenshot or GIF of the app here -->
 
 ## Results
 
